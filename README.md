@@ -98,7 +98,7 @@ An end-to-end, data engineering project that streams simulated GPS & sensor even
 1. **Clone & configure**
 
 ```bash
-git clone https://github.com/<you>/real-time-logistics-insights.git
+git clone https://github.com/Chenti-prog/Real-Time-Logistics-Insights-Platform.git
 cd real-time-logistics-insights
 cp .env.example .env  # update passwords, S3 keys (or MinIO), etc.
 ```
