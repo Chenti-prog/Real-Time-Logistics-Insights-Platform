@@ -26,3 +26,15 @@ data/
 
 # OS
 .DS_Store
+
+
+.env
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+pgdata/
+target/
+dbt/target/
+dbt/dbt_packages/
+EOF

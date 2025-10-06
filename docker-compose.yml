@@ -1,0 +1,63 @@
+services:
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: unless-stopped
+    ports: ["2181:2181"]
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.5
+    container_name: kafka
+    restart: unless-stopped
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on: [zookeeper]
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: logistics_dw
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  dbt:
+    build: ./dbt            # ← build locally; no GHCR pull
+    container_name: dbt
+    working_dir: /usr/app
+    environment:
+      - DBT_PROFILES_DIR=/usr/app        # tells dbt where to find profiles.yml
+    command: tail -f /dev/null 
+    volumes:
+      - ./dbt:/usr/app
+    depends_on: [postgres]
+
+  prometheus:
+    image: prom/prometheus:v2.54.0
+    container_name: prometheus
+    restart: unless-stopped
+    ports: ["9090:9090"]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on: [kafka, postgres]
+
+  grafana:
+    image: grafana/grafana:10.4.5
+    container_name: grafana
+    restart: unless-stopped
+    ports: ["3000:3000"]
+    volumes:
+      - ./monitoring/grafana_dashboards:/var/lib/grafana/dashboards
+    depends_on: [prometheus]
+
+volumes:
+  pgdata:

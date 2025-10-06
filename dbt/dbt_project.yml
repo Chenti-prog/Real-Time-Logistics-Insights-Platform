@@ -1,0 +1,15 @@
+name: logistics
+version: 1.0.0
+config-version: 2
+
+profile: logistics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  logistics:
+    +schema: analytics
+    +materialized: view
