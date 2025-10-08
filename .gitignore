@@ -38,3 +38,5 @@ target/
 dbt/target/
 dbt/dbt_packages/
 EOF
+
+PEM pass phrase=kafka123
